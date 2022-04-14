@@ -1,4 +1,4 @@
-console.log("Hello");
+console.log("Hello World");
 var mysql = require('mysql');
 
 var con = mysql.createConnection({
