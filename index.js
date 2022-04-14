@@ -1,7 +1,9 @@
 console.log("Hello World");
 var mysql = require('mysql');
 
-var con = mysql.createConnection({
+// ------------------- for check  connection change host, user, password ------------------ //
+
+/**var con = mysql.createConnection({
   host: "127.0.0.1",
   user: "root",
   password: "root"
@@ -10,4 +12,4 @@ var con = mysql.createConnection({
 con.connect(function(err) {
   if (err) throw err;
   console.log("Connected!");
-});
+});**/
