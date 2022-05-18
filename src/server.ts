@@ -1,12 +1,32 @@
+import 'reflect-metadata';
 import mysql from 'mysql2';
-import { graphql, buildSchema } from 'graphql';
+import { ApolloServer } from 'apollo-server';
+import { PrismaClient } from '@prisma/client';
 
+const prisma = new PrismaClient();
+
+// async function main() {
+//   // ... you will write your Prisma Client queries here
+//   const post = await prisma.post.update({
+//     where: { id: 1 },
+//     data: { published: false },
+//   });
+//   console.log(post);
+// }
+
+// main()
+//   .catch((e) => {
+//     throw e;
+//   })
+//   .finally(async () => {
+//     await prisma.$disconnect();
+//   });
 // ------------------- for check connection change host, user, password ------------------ //
 
 const con = mysql.createConnection({
   host: '127.0.0.1',
-  user: 'admin',
-  password: 'Pa$$W0rd',
+  user: 'root',
+  password: '',
 });
 
 con.connect((err: any) => {
@@ -14,23 +34,26 @@ con.connect((err: any) => {
   console.log('Connected!');
 });
 
-// Construct a schema, using GraphQL schema language
-const schema = buildSchema(`
-  type Query {
-    hello: String
+const typeDefs = `
+  type User {
+    email: String!
+    name: String
   }
-`);
-
-// The rootValue provides a resolver function for each API endpoint
-const rootValue = {
-  hello: () => 'Hello world!',
+  type Query {
+    allUsers: [User!]!
+  }
+`;
+const resolvers = {
+  Query: {
+    allUsers: () => prisma.user.findMany(),
+  },
 };
 
-// Run the GraphQL query '{ hello }' and print out the response
-graphql({
-  schema,
-  source: '{ hello }',
-  rootValue,
-}).then((response) => {
-  console.log(response);
+// The ApolloServer constructor requires two parameters: your schema
+// definition and your set of resolvers.
+const server = new ApolloServer({ typeDefs, resolvers });
+
+// The `listen` method launches a web server.
+server.listen().then(({ url }) => {
+  console.log(`🚀  Server ready at ${url}`);
 });
