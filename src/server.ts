@@ -5,34 +5,18 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-// async function main() {
-//   // ... you will write your Prisma Client queries here
-//   const post = await prisma.post.update({
-//     where: { id: 1 },
-//     data: { published: false },
-//   });
-//   console.log(post);
-// }
-
-// main()
-//   .catch((e) => {
-//     throw e;
-//   })
-//   .finally(async () => {
-//     await prisma.$disconnect();
-//   });
 // ------------------- for check connection change host, user, password ------------------ //
 
-const con = mysql.createConnection({
-  host: '127.0.0.1',
-  user: 'root',
-  password: '',
-});
+// const con = mysql.createConnection({
+//   host: '127.0.0.1',
+//   user: 'admin',
+//   password: 'Pa$$W0rd',
+// });
 
-con.connect((err: any) => {
-  if (err) throw err;
-  console.log('Connected!');
-});
+// con.connect((err: any) => {
+//   if (err) throw err;
+//   console.log('Connected!');
+// });
 
 const typeDefs = `
   type User {
