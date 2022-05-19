@@ -12,16 +12,22 @@ const typeDefs = `
     name: String
     password: String
   }
+  type Status {
+    name: String
+  }
   type Query {
     allUsers: [User!]!
+    allStatus: [Status!]!
   }
   type Mutation {
     createUser(name: String, email: String,password: String): User
+    createStatus(name: String): Status
   }
 `;
 const resolvers = {
   Query: {
     allUsers: () => prisma.user.findMany(),
+    allStatus: () => prisma.status.findMany(),
   },
   Mutation: {
     createUser: async (
@@ -30,6 +36,15 @@ const resolvers = {
     ) => {
       const res = await prisma.user.create({
         data: { name: args.name, email: args.email, password: args.password },
+      });
+      return res;
+    },
+    createStatus: async (
+      _: any,
+      args: { name: any }
+    ) => {
+      const res = await prisma.status.create({
+        data: { name: args.name },
       });
       return res;
     },
