@@ -4,18 +4,7 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-// ------------------- for check connection change host, user, password ------------------ //
-
-// const con = mysql.createConnection({
-//   host: '127.0.0.1',
-//   user: 'admin',
-//   password: 'Pa$$W0rd',
-// });
-
-// con.connect((err: any) => {
-//   if (err) throw err;
-//   console.log('Connected!');
-// });
+// ---------------------------------- Apollo Server ---------- //
 
 const typeDefs = `
   type User {
