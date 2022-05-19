@@ -1,5 +1,4 @@
 import 'reflect-metadata';
-import mysql from 'mysql2';
 import { ApolloServer } from 'apollo-server';
 import { PrismaClient } from '@prisma/client';
 
@@ -26,21 +25,10 @@ const typeDefs = `
   type Query {
     allUsers: [User!]!
   }
-  type Mutation {
-    createUser(name: String, email: String): User
-  }
 `;
 const resolvers = {
   Query: {
     allUsers: () => prisma.user.findMany(),
-  },
-  Mutation: {
-    createUser: async (_: any, args: { name: any; email: any }) => {
-      const res = await prisma.user.create({
-        data: { name: args.name, email: args.email },
-      });
-      return res;
-    },
   },
 };
 
