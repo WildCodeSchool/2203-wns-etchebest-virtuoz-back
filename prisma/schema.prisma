@@ -1,6 +1,9 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
+// https://www.prisma.io/docs/concepts/components/prisma-migrate
+// create second migration : prisma migrate dev --name modification_name
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -30,13 +33,15 @@ model Project {
   title         String     @db.VarChar(255)
   description   String?    @db.VarChar(1000)
   createdAt     DateTime   @default(now())
-  finishedAt    DateTime?  @finishedAt
-  picture       url?       
+  finishedAt    DateTime?  
+  picture       String?       
+  tickets       Ticket[]
 }
 
 model Status {
   id            Int        @id @default(autoincrement())
   name          String     @db.VarChar(255)
+  tickets       Ticket[]
 }
 
 model User {
@@ -44,4 +49,5 @@ model User {
   email         String     @unique
   name          String?  
   password      String     
+  tickets       Ticket[]
 }
