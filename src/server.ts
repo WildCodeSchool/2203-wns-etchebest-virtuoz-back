@@ -10,14 +10,29 @@ const typeDefs = `
   type User {
     email: String!
     name: String
+    password: String
   }
   type Query {
     allUsers: [User!]!
+  }
+  type Mutation {
+    createUser(name: String, email: String,password: String): User
   }
 `;
 const resolvers = {
   Query: {
     allUsers: () => prisma.user.findMany(),
+  },
+  Mutation: {
+    createUser: async (
+      _: any,
+      args: { name: any; email: any; password: any }
+    ) => {
+      const res = await prisma.user.create({
+        data: { name: args.name, email: args.email, password: args.password },
+      });
+      return res;
+    },
   },
 };
 
