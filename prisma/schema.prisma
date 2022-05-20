@@ -2,7 +2,7 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 // https://www.prisma.io/docs/concepts/components/prisma-migrate
-// create second migration : prisma migrate dev --name modification_name
+// create second migration : npx prisma migrate dev --name modification_name
 
 generator client {
   provider = "prisma-client-js"
@@ -20,12 +20,12 @@ model Ticket {
   createdAt   DateTime     @default(now())
   updatedAt   DateTime?    @updatedAt
   published   Boolean      @default(true)
-  author      User         @relation(fields: [authorId], references: [id])
-  authorId    Int
-  project     Project      @relation(fields: [projectId], references: [id])
-  projectId   Int
-  status      Status        @relation(fields: [statusId], references: [id])
-  statusId    Int
+  author      User?         @relation(fields: [authorId], references: [id])
+  authorId    Int?
+  project     Project?      @relation(fields: [projectId], references: [id])
+  projectId   Int?
+  status      Status?        @relation(fields: [statusId], references: [id])
+  statusId    Int?
 }
 
 model Project {
