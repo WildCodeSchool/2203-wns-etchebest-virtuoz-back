@@ -31,9 +31,7 @@ const typeDefs = gql`
 const resolvers = {
   Query: {
     allUsers: () => prisma.user.findMany(),
-<<<<<<< HEAD
     allStatus: () => prisma.status.findMany(),
-=======
     findUserById: async (_: any, args: any) => {
       const { id } = args;
       const res = await prisma.user.findUnique({
@@ -43,7 +41,6 @@ const resolvers = {
       });
       return res;
     },
->>>>>>> f99d4f84d7fad81d9fdd00c076d3bda35ed5b4d6
   },
   Mutation: {
     createUser: async (_: any, args: any) => {
