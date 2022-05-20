@@ -22,14 +22,29 @@ const typeDefs = gql`
     description: String
     createdAt: String
   }
+
+  type Ticket {
+    id: ID
+    title: String
+    content:     String
+    createdAt:   Float
+    updatedAt:   Float
+    published:   Boolean
+    author:      User
+    authorId:    Int
+  }
+
   type Query {
     getAllUsers: [User!]!
+
     findUserById(id: ID): User
 
     getAllStatus: [Status!]!
 
     getAllProject: [Project!]!
     findProjectById(id: ID): Project
+
+    getAllTickets: [Ticket!]!
   }
 
   type Mutation {
@@ -42,6 +57,9 @@ const typeDefs = gql`
     createProject(title: String, description: String, createdAt: String): Project
     updateProject(id: ID, title: String, description: String, finishedAt: String): Project
     deleteProject(id: ID): Project
+
+    createTicket(title: String, content: String): Ticket
+    updateTicket(id: ID, title: String, content: String): Ticket
   }
 `;
 const resolvers = {
@@ -137,6 +155,20 @@ const resolvers = {
         where: { id: Number(args.id) },
       });
       return res;
+    },
+    createTicket: async (_: any, args: { title: any; content: any }) => {
+      const result = await prisma.ticket.create({
+        data: { title: args.title, content: args.content },
+      });
+      return result;
+    },
+
+    updateTicket: async (_: any, args: any) => {
+      const result = await prisma.ticket.update({
+        where: { id: Number(args.id) },
+        data: { title: args.title, content: args.content },
+      });
+      return result;  
     },
   },
 };
