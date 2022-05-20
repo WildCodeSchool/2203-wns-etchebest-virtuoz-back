@@ -1,35 +1,72 @@
 import 'reflect-metadata';
-import mysql from 'mysql2';
 import { ApolloServer } from 'apollo-server';
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-// ------------------- for check connection change host, user, password ------------------ //
-
-// const con = mysql.createConnection({
-//   host: '127.0.0.1',
-//   user: 'admin',
-//   password: 'Pa$$W0rd',
-// });
-
-// con.connect((err: any) => {
-//   if (err) throw err;
-//   console.log('Connected!');
-// });
-
 const typeDefs = `
   type User {
+    id: ID
     email: String!
     name: String
+    password: String
   }
+
+  type Ticket {
+    id: ID
+    title: String
+    content:     String
+    createdAt:   Float
+    updatedAt:   Float
+    published:   Boolean
+    author:      User
+    authorId:    Int
+  }
+
   type Query {
-    allUsers: [User!]!
+    getAllUsers: [User!]!
+    getAllTickets: [Ticket!]!
+  }
+  type Mutation {
+
+    createUser(name: String, email: String, password: String): User
+
+    createTicket(title: String, content: String): Ticket
+
+    updateTicket(id: ID, title: String, content: String): Ticket
   }
 `;
 const resolvers = {
   Query: {
-    allUsers: () => prisma.user.findMany(),
+    getAllUsers: () => prisma.user.findMany(),
+    getAllTickets: () => prisma.ticket.findMany(),
+  },
+
+  Mutation: {
+    createUser: async (
+      _: any,
+      args: { name: any; email: any; password: any }
+    ) => {
+      const result = await prisma.user.create({
+        data: { name: args.name, email: args.email, password: args.password },
+      });
+      return result;
+    },
+
+    createTicket: async (_: any, args: { title: any; content: any }) => {
+      const result = await prisma.ticket.create({
+        data: { title: args.title, content: args.content },
+      });
+      return result;
+    },
+
+    updateTicket: async (_: any, args: any) => {
+      const result = await prisma.ticket.update({
+        where: { id: Number(args.id) },
+        data: { title: args.title, content: args.content },
+      });
+      return result;
+    },
   },
 };
 
