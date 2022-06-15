@@ -14,6 +14,7 @@ const typeDefs = gql`
     password: String
   }
   type Status {
+    id: ID
     name: String
   }
   type Project {
@@ -26,12 +27,12 @@ const typeDefs = gql`
   type Ticket {
     id: ID
     title: String
-    content:     String
-    createdAt:   Float
-    updatedAt:   Float
-    published:   Boolean
-    author:      User
-    authorId:    Int
+    content: String
+    createdAt: Float
+    updatedAt: Float
+    published: Boolean
+    author: User
+    authorId: Int
   }
 
   type Query {
@@ -40,6 +41,7 @@ const typeDefs = gql`
     findUserById(id: ID): User
 
     getAllStatus: [Status!]!
+    findStatusById(id: ID): Status
 
     getAllProject: [Project!]!
     findProjectById(id: ID): Project
@@ -53,9 +55,20 @@ const typeDefs = gql`
     updateUser(id: ID, name: String, email: String, password: String): User
 
     createStatus(name: String): Status
-    
-    createProject(title: String, description: String, createdAt: String): Project
-    updateProject(id: ID, title: String, description: String, finishedAt: String): Project
+    updateStatus(id: ID, name: String): Status
+    deleteStatus(id: ID): Status
+
+    createProject(
+      title: String
+      description: String
+      createdAt: String
+    ): Project
+    updateProject(
+      id: ID
+      title: String
+      description: String
+      finishedAt: String
+    ): Project
     deleteProject(id: ID): Project
 
     createTicket(title: String, content: String): Ticket
@@ -65,6 +78,7 @@ const typeDefs = gql`
 const resolvers = {
   Query: {
     getAllUsers: () => prisma.user.findMany(),
+    getAllTickets: () => prisma.ticket.findMany(),
     getAllStatus: () => prisma.status.findMany(),
     findUserById: async (_: any, args: any) => {
       const { id } = args;
@@ -80,7 +94,11 @@ const resolvers = {
       const result = await prisma.project.findUnique(args.id);
       return result;
     },
-  },  
+    findStatusById: async (_: any, args: any) => {
+      const res = await prisma.status.findUnique(args.id);
+      return res;
+    },
+  },
 
   Mutation: {
     createUser: async (_: any, args: any) => {
@@ -111,12 +129,29 @@ const resolvers = {
       });
       return res;
     },
-    createStatus: async (
-      _: any,
-      args: { name: any }
-    ) => {
+    createStatus: async (_: any, args: { name: any }) => {
       const res = await prisma.status.create({
         data: { name: args.name },
+      });
+      return res;
+    },
+    deleteStatus: async (_: any, args: any) => {
+      const { id } = args;
+      const res = prisma.status.delete({
+        where: {
+          id: Number(id),
+        },
+      });
+      return res;
+    },
+    updateStatus: async (_: any, args: any) => {
+      const res = await prisma.status.update({
+        where: {
+          id: Number(args.id),
+        },
+        data: {
+          name: args.name,
+        },
       });
       return res;
     },
@@ -168,7 +203,7 @@ const resolvers = {
         where: { id: Number(args.id) },
         data: { title: args.title, content: args.content },
       });
-      return result;  
+      return result;
     },
   },
 };
