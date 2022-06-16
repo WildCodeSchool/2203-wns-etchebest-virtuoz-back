@@ -12,7 +12,8 @@ COPY tsconfig.json ./
 COPY .env ./
 COPY src src
 COPY prisma prisma
-
+RUN npm install -g prisma
+RUN prisma migrate dev --name init
 # Expose on correct port 
 
 EXPOSE 3000
@@ -20,7 +21,6 @@ EXPOSE 3000
 # Run needed command 
 
 RUN npm i -f
-RUN npx prisma generate
 
 # launch backend
 
