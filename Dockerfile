@@ -23,4 +23,4 @@ RUN npm i -f
 RUN npx prisma generate 
 
 # A command to start the server
-CMD npm start
+CMD npx prisma migrate dev --name init && npm start
