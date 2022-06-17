@@ -26,12 +26,12 @@ const typeDefs = gql`
   type Ticket {
     id: ID
     title: String
-    content:     String
-    createdAt:   Float
-    updatedAt:   Float
-    published:   Boolean
-    author:      User
-    authorId:    Int
+    content: String
+    createdAt: Float
+    updatedAt: Float
+    published: Boolean
+    author: User
+    authorId: Int
   }
 
   type Query {
@@ -53,9 +53,18 @@ const typeDefs = gql`
     updateUser(id: ID, name: String, email: String, password: String): User
 
     createStatus(name: String): Status
-    
-    createProject(title: String, description: String, createdAt: String): Project
-    updateProject(id: ID, title: String, description: String, finishedAt: String): Project
+
+    createProject(
+      title: String
+      description: String
+      createdAt: String
+    ): Project
+    updateProject(
+      id: ID
+      title: String
+      description: String
+      finishedAt: String
+    ): Project
     deleteProject(id: ID): Project
 
     createTicket(title: String, content: String): Ticket
@@ -80,7 +89,7 @@ const resolvers = {
       const result = await prisma.project.findUnique(args.id);
       return result;
     },
-  },  
+  },
 
   Mutation: {
     createUser: async (_: any, args: any) => {
@@ -111,10 +120,7 @@ const resolvers = {
       });
       return res;
     },
-    createStatus: async (
-      _: any,
-      args: { name: any }
-    ) => {
+    createStatus: async (_: any, args: { name: any }) => {
       const res = await prisma.status.create({
         data: { name: args.name },
       });
@@ -156,19 +162,22 @@ const resolvers = {
       });
       return res;
     },
-    createTicket: async (_: any, args: { title: any; content: any }) => {
-      const result = await prisma.ticket.create({
-        data: { title: args.title, content: args.content },
-      });
-      return result;
-    },
+    // createTicket: async (
+    //   _: any,
+    //   args: { title: any; content: any; status: any }
+    // ) => {
+    //   const result = await prisma.ticket.create({
+    //     data: { title: args.title, content: args.content, status: args.status },
+    //   });
+    //   return result;
+    // },
 
     updateTicket: async (_: any, args: any) => {
       const result = await prisma.ticket.update({
         where: { id: Number(args.id) },
         data: { title: args.title, content: args.content },
       });
-      return result;  
+      return result;
     },
   },
 };
