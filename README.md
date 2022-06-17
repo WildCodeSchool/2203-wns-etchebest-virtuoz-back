@@ -8,5 +8,4 @@ Open [http://localhost:4000](http://localhost:3000) with your browser to see the
 
 ## Docker
 
-The whole application can be run with docker :
-"command docker compose up"
+the whole application can be launched on the front side of the project with the "docker compose up" command
