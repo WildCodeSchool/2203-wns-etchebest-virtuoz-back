@@ -20,11 +20,7 @@ COPY tsconfig.json ./
 # COPY
 COPY . .
 RUN npm i -f
-RUN npm i -g prisma1
-RUN prisma 
-
-# Run and expose the server on port 3000
-EXPOSE 3000
+RUN npx prisma generate 
 
 # A command to start the server
 CMD npm start
