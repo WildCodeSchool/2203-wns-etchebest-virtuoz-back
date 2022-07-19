@@ -1,4 +1,4 @@
-FROM node:lts-alpine
+FROM node:lts
 
 # Create docker image 
 
@@ -17,10 +17,12 @@ COPY .env ./
 # COPY tsconfig.json file
 COPY tsconfig.json ./
 
-# COPY
-COPY . .
-RUN npm i -f
+# COPY src folder
+COPY src ./src
+
+RUN yarn --network-timeout 100000
+RUN npm i -g prisma
 RUN npx prisma generate 
 
 # A command to start the server
-CMD npx prisma migrate dev --name init && npm start
+CMD npx prisma migrate dev --name init && prisma db push && npm start
