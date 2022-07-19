@@ -13,8 +13,10 @@ module.exports = {
   },
   plugins: ['@typescript-eslint', 'prettier'],
   rules: {
-    'no-underscore-dangle': ['error', { allow: ['_id'] }],
+    'no-underscore-dangle': [`error`, { allow: ['_id'] }],
     'no-console': 'off',
+    'no-unused-vars': 'off',
+    '@typescript-eslint/no-unused-vars': ['warn'],
   },
   ignorePatterns: ['.eslintrc.js'],
 };
