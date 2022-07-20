@@ -17,8 +17,8 @@ COPY .env ./
 # COPY tsconfig.json file
 COPY tsconfig.json ./
 
-# COPY
-COPY . .
+# COPY src folder
+COPY src ./src
 RUN npm i -f
 RUN npx prisma generate 
 

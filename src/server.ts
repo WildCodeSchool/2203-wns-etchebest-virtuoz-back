@@ -1,8 +1,11 @@
 import 'reflect-metadata';
-import { ApolloServer, gql } from 'apollo-server';
+import { ApolloError, ApolloServer, gql } from 'apollo-server';
 import { PrismaClient } from '@prisma/client';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 
 const prisma = new PrismaClient();
+const jwtKey = 'my_secret_key_that_must_be_very_long';
 
 // ---------------------------------- Apollo Server ---------- //
 
@@ -45,6 +48,8 @@ const typeDefs = gql`
     findProjectById(id: ID): Project
 
     getAllTickets: [Ticket!]!
+
+    login(email: String, password: String): String
   }
 
   type Mutation {
@@ -73,7 +78,12 @@ const typeDefs = gql`
 `;
 const resolvers = {
   Query: {
-    getAllUsers: () => prisma.user.findMany(),
+    getAllUsers: (parents: any, args: any, context: any, info: any) => {
+      if (context.authenticatedUserEmail) {
+        return prisma.user.findMany();
+      }
+      throw new ApolloError('Invalid auth');
+    },
     getAllStatus: () => prisma.status.findMany(),
     findUserById: async (_: any, args: any) => {
       const { id } = args;
@@ -89,13 +99,31 @@ const resolvers = {
       const result = await prisma.project.findUnique(args.id);
       return result;
     },
+
+    login: async (parent: any, args: any, context: any, info: any) => {
+      const user = await prisma.user.findUnique({
+        where: {
+          email: args.email,
+        },
+      });
+      if (user && bcrypt.compareSync(args.password, user.password)) {
+        const token = jwt.sign(
+          {
+            user: user.email,
+          },
+          jwtKey
+        );
+        return token;
+      }
+      throw new ApolloError('Invalid credentials');
+    },
   },
 
   Mutation: {
     createUser: async (_: any, args: any) => {
       const { name, email, password } = args;
       const res = await prisma.user.create({
-        data: { name, email, password },
+        data: { name, email, password: bcrypt.hashSync(password, 10) },
       });
       return res;
     },
@@ -184,7 +212,24 @@ const resolvers = {
 
 // The ApolloServer constructor requires two parameters: your schema
 // definition and your set of resolvers.
-const server = new ApolloServer({ typeDefs, resolvers });
+const server = new ApolloServer({
+  typeDefs,
+  resolvers,
+
+  context: ({ req }) => {
+    const token = req.headers.authorization;
+    if (token) {
+      let payload;
+      try {
+        payload = jwt.verify(token, jwtKey) as { user: string };
+        return { authenticatedUserEmail: payload.user };
+      } catch (err) {
+        return { authenticatedUserEmail: null };
+      }
+    }
+    return { authenticatedUserEmail: null };
+  },
+});
 
 // The `listen` method launches a web server.
 server.listen().then(({ url }) => {
