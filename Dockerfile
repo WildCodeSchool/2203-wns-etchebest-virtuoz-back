@@ -20,7 +20,10 @@ COPY tsconfig.json ./
 # COPY src folder
 COPY src ./src
 RUN npm i -f
+RUN npm i -g prisma
 RUN npx prisma generate 
 
 # A command to start the server
-CMD npm start
+CMD npx prisma migrate dev --name init && prisma db push && npm start
+
+
