@@ -35,6 +35,7 @@ const typeDefs = gql`
     published: Boolean
     author: User
     authorId: Int
+    status: String
   }
 
   type Query {
@@ -72,8 +73,9 @@ const typeDefs = gql`
     ): Project
     deleteProject(id: ID): Project
 
-    createTicket(title: String, content: String): Ticket
+    createTicket(title: String, content: String, status: String): Ticket
     updateTicket(id: ID, title: String, content: String): Ticket
+    deleteTicket(id: ID): Ticket
   }
 `;
 const resolvers = {
@@ -84,7 +86,7 @@ const resolvers = {
       }
       throw new ApolloError('Invalid auth');
     },
-    getAllStatus: () => prisma.status.findMany(),
+
     findUserById: async (_: any, args: any) => {
       const { id } = args;
       const res = await prisma.user.findUnique({
@@ -99,6 +101,8 @@ const resolvers = {
       const result = await prisma.project.findUnique(args.id);
       return result;
     },
+
+    getAllTickets: () => prisma.ticket.findMany(),
 
     login: async (parent: any, args: any, context: any, info: any) => {
       const user = await prisma.user.findUnique({
@@ -148,12 +152,7 @@ const resolvers = {
       });
       return res;
     },
-    createStatus: async (_: any, args: { name: any }) => {
-      const res = await prisma.status.create({
-        data: { name: args.name },
-      });
-      return res;
-    },
+
     createProject: async (
       _: any,
       args: {
@@ -190,15 +189,22 @@ const resolvers = {
       });
       return res;
     },
-    // createTicket: async (
-    //   _: any,
-    //   args: { title: any; content: any; status: any }
-    // ) => {
-    //   const result = await prisma.ticket.create({
-    //     data: { title: args.title, content: args.content, status: args.status },
-    //   });
-    //   return result;
-    // },
+
+    deleteTicket: async (_: any, args: any) => {
+      const res = await prisma.ticket.delete({
+        where: { id: Number(args.id) },
+      });
+      return res;
+    },
+    createTicket: async (
+      _: any,
+      args: { title: any; content: any; status: any }
+    ) => {
+      const result = await prisma.ticket.create({
+        data: { title: args.title, content: args.content, status: args.status },
+      });
+      return result;
+    },
 
     updateTicket: async (_: any, args: any) => {
       const result = await prisma.ticket.update({
