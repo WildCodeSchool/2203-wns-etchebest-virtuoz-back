@@ -100,6 +100,13 @@ const resolvers = {
       return result;
     },
 
+    getAllTickets: (parents: any, args: any, context: any, info: any) => {
+    if (context.authenticatedUserEmail) {
+      return prisma.ticket.findMany();
+    }
+    throw new ApolloError('Invalid auth');
+  },
+
     login: async (parent: any, args: any, context: any, info: any) => {
       const user = await prisma.user.findUnique({
         where: {
@@ -107,7 +114,7 @@ const resolvers = {
         },
       });
       if (user && bcrypt.compareSync(args.password, user.password)) {
-        const token = jwt.sign(
+       const token = jwt.sign(
           {
             user: user.email,
           },
@@ -190,15 +197,15 @@ const resolvers = {
       });
       return res;
     },
-    // createTicket: async (
-    //   _: any,
-    //   args: { title: any; content: any; status: any }
-    // ) => {
-    //   const result = await prisma.ticket.create({
-    //     data: { title: args.title, content: args.content, status: args.status },
-    //   });
-    //   return result;
-    // },
+    createTicket: async (
+      _: any,
+      args: { title: any; content: any; status: any }
+    ) => {
+      const result = await prisma.ticket.create({
+        data: { title: args.title, content: args.content, status: args.status },
+      });
+      return result;
+    },
 
     updateTicket: async (_: any, args: any) => {
       const result = await prisma.ticket.update({
