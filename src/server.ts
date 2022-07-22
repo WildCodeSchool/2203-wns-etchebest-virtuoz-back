@@ -120,7 +120,6 @@ const resolvers = {
           },
           jwtKey
         );
-        console.log(token)
         return token;
       }
       throw new ApolloError('Invalid credentials');
