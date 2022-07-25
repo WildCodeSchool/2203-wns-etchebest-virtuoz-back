@@ -49,11 +49,12 @@ const typeDefs = gql`
 
     getAllTickets: [Ticket!]!
 
+    createUser(name: String, email: String, password: String): String
+
     login(email: String, password: String): String
   }
 
   type Mutation {
-    createUser(name: String, email: String, password: String): User
     deleteUser(id: ID): User
     updateUser(id: ID, name: String, email: String, password: String): User
 
@@ -101,11 +102,26 @@ const resolvers = {
     },
 
     getAllTickets: (parents: any, args: any, context: any, info: any) => {
-    if (context.authenticatedUserEmail) {
-      return prisma.ticket.findMany();
-    }
-    throw new ApolloError('Invalid auth');
-  },
+      if (context.authenticatedUserEmail) {
+        return prisma.ticket.findMany();
+      }
+      throw new ApolloError('Invalid auth');
+    },
+
+    createUser: async (_: any, args: any) => {
+      const { name, email, password } = args;
+      await prisma.user.create({
+        data: { name, email, password: bcrypt.hashSync(password, 10) },
+      });
+
+      const token = jwt.sign(
+        {
+          user: email,
+        },
+        jwtKey
+      );
+      return token;
+    },
 
     login: async (parent: any, args: any, context: any, info: any) => {
       const user = await prisma.user.findUnique({
@@ -114,7 +130,7 @@ const resolvers = {
         },
       });
       if (user && bcrypt.compareSync(args.password, user.password)) {
-       const token = jwt.sign(
+        const token = jwt.sign(
           {
             user: user.email,
           },
@@ -127,14 +143,6 @@ const resolvers = {
   },
 
   Mutation: {
-    createUser: async (_: any, args: any) => {
-      const { name, email, password } = args;
-      const res = await prisma.user.create({
-        data: { name, email, password: bcrypt.hashSync(password, 10) },
-      });
-      return res;
-    },
-
     deleteUser: async (_: any, args: any) => {
       const { id } = args;
       const res = await prisma.user.delete({
